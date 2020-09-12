@@ -1,0 +1,217 @@
+					//person-area database//
+postgres=# create type a_type as enum('urban','rural');
+CREATE TYPE
+=======================================================================================
+postgres=# create table area(a_name text primary key,atype a_type);
+CREATE TABLE
+postgres=# \d area
+               Table "public.area"
+ Column |  Type  | Collation | Nullable | Default 
+--------+--------+-----------+----------+---------
+ a_name | text   |           | not null | 
+ atype  | a_type |           |          | 
+Indexes:
+    "area_pkey" PRIMARY KEY, btree (a_name)
+======================================================================================
+postgres=# create table person(p_no int primary key,p_name text,birth_date date,income money,a_name text references area(a_name));
+CREATE TABLE
+postgres=# \d person;
+                 Table "public.person"
+   Column   |  Type   | Collation | Nullable | Default 
+------------+---------+-----------+----------+---------
+ p_no       | integer |           | not null | 
+ p_name     | text    |           |          | 
+ birth_date | date    |           |          | 
+ income     | money   |           |          | 
+ a_name     | text    |           |          | 
+Indexes:
+    "person_pkey" PRIMARY KEY, btree (p_no)
+Foreign-key constraints:
+    "person_a_name_fkey" FOREIGN KEY (a_name) REFERENCES area(a_name)
+===============================================================================
+
+postgres=# select *from area;
+ a_name | atype 
+--------+-------
+ pune   | urban
+ mumbai | urban
+ nagpur | rural
+ akola  | rural
+(4 rows)
+==================================================================================
+
+postgres=# select *from person;
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  101 | depak  | 2000-07-07 |  ₹40,000.00 | pune
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  104 | vishal | 2001-01-07 |  ₹70,000.00 | nagpur
+  105 | rohit  | 2003-07-09 |  ₹76,000.00 | akola
+(5 rows)
+=================================================================================
+1)
+postgres=# select p_name from person where a_name='pune';
+ p_name 
+--------
+ depak
+ arti
+(2 rows)
+======================================================================================
+2)
+postgres=# select *from person where p_name like 'd%';
+ p_no | p_name | birth_date |   income   | a_name 
+------+--------+------------+------------+--------
+  101 | depak  | 2000-07-07 | ₹40,000.00 | pune
+(1 row)
+===================================================================================
+postgres=# select count(p_name) from person where income>'50000' group by a_name;  //EXTRA//
+ count 
+-------
+     1
+     1
+     1
+     1
+(4 rows)
+=========================================================================================
+3)
+postgres=# select a_name,count(p_name) from person where income>'50000' group by a_name;
+ a_name | count 
+--------+-------
+ nagpur |     1
+ mumbai |     1
+ akola  |     1
+ pune   |     1
+(4 rows)
+
+postgres=# select a_name,count(p_name) from person where income>='40000' group by a_name;
+ a_name | count 
+--------+-------
+ nagpur |     1
+ mumbai |     1
+ akola  |     1
+ pune   |     2
+(4 rows)
+
+postgres=# select p_name from person where income >='60000';
+ p_name 
+--------
+ arti
+ binod
+ vishal
+ rohit
+(4 rows)
+=========================================================================================
+4)
+postgres=# select p_name from person where income between '60000' and '70000';
+ p_name 
+--------
+ vishal
+(1 row)
+
+postgres=# select p_name from person where income between '40000' and '80000';
+ p_name 
+--------
+ depak
+ vishal
+ rohit
+(3 rows)
+===================================================================================
+5)
+postgres=# select p_name,extract(month from birth_date)=07 from person;
+ p_name | ?column? 
+--------+----------
+ depak  | t
+ arti   | f
+ binod  | f
+ vishal | f
+ rohit  | t
+(5 rows)
+
+postgres=# select p_name,extract(day from birth_date)=07 from person;
+ p_name | ?column? 
+--------+----------
+ depak  | t
+ arti   | f
+ binod  | f
+ vishal | t
+ rohit  | f
+(5 rows)
+======================================================================================
+//EXTRA//
+postgres=# select* from person where income in(select max(income) from person group by a_name);
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  104 | vishal | 2001-01-07 |  ₹70,000.00 | nagpur
+  105 | rohit  | 2003-07-09 |  ₹76,000.00 | akola
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+(4 rows)
+//EXTRA//
+postgres=# select p_name from person where income in(select max(income) from person group by a_name);
+ p_name 
+--------
+ vishal
+ rohit
+ binod
+ arti
+(4 rows)
+
+7)
+postgres=# select p_name,a_name from person where income in(select max(income) from person group by a_name);
+ p_name | a_name 
+--------+--------
+ vishal | nagpur
+ rohit  | akola
+ binod  | mumbai
+ arti   | pune
+(4 rows)
+=============================================================================================
+8)
+postgres=# update person set income=income+(income*10)/100 where a_name in(select a_name from area where atype='rural');
+UPDATE 2
+postgres=# select *from person;
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  101 | depak  | 2000-07-07 |  ₹40,000.00 | pune
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  104 | vishal | 2001-01-07 |  ₹77,000.00 | nagpur   --update
+  105 | rohit  | 2003-07-09 |  ₹83,600.00 | akola --update
+(5 rows)
+===================================================================================
+
+postgres=# delete from person where income<='40000';
+DELETE 1
+postgres=# select *from person;
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  104 | vishal | 2001-01-07 |  ₹77,000.00 | nagpur
+  105 | rohit  | 2003-07-09 |  ₹83,600.00 | akola
+(4 rows)
+===================================================================================
+10)
+postgres=# select *from person order by p_name; --by default 'asc'
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  105 | rohit  | 2003-07-09 |  ₹83,600.00 | akola
+  104 | vishal | 2001-01-07 |  ₹77,000.00 | nagpur
+(4 rows)
+
+postgres=# select *from person order by p_name desc;
+ p_no | p_name | birth_date |   income    | a_name 
+------+--------+------------+-------------+--------
+  104 | vishal | 2001-01-07 |  ₹77,000.00 | nagpur
+  105 | rohit  | 2003-07-09 |  ₹83,600.00 | akola
+  103 | binod  | 1980-02-02 |  ₹90,000.00 | mumbai
+  102 | arti   | 2000-01-04 | ₹100,000.00 | pune
+(4 rows)
+
+=============================================================================
+
+
+

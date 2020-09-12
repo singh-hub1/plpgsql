@@ -1,0 +1,89 @@
+						//movie actor database//
+1)
+postgres=# select a.a_name, m.m_name from movie m,actor a,mov_act_pro c where m.m_name=c.m_name and a.a_name=c.a_name;
+     a_name      | m_name 
+-----------------+--------
+ amir            | sholey
+ anushka         | pk
+ anushka         | piku
+ amir            | dangal
+ ritesh deshmukh | ddlj
+ anushka         | ddlj
+ allia           | sholey
+(7 rows)
+
+//EXTRA//
+postgres=# select distinct a.a_name, m.m_name from movie m,actor a,mov_act_pro c where m.m_name=c.m_name and a.a_name=c.a_name;
+     a_name      | m_name 
+-----------------+--------
+ amir            | dangal
+ anushka         | piku
+ allia           | sholey
+ anushka         | pk
+ amir            | sholey
+ ritesh deshmukh | ddlj
+ anushka         | ddlj
+(7 rows)
+=================================================================================
+2)
+postgres=# select p.p_name,m.m_name from movie m,producer p,mov_act_pro c where p.p_name='subhash ghai' and m.m_name=c.m_name and p.p_id=c.p_id;
+    p_name    | m_name 
+--------------+--------
+ subhash ghai | pk
+ subhash ghai | dangal
+(2 rows)
+=====================================================================================
+3)
+postgres=# select *from movie where budget=(select min(budget) from movie);
+ m_name |    budget     | release_year 
+--------+---------------+--------------
+ pk     | ₹1,000,000.00 |         2016
+(1 row)
+====================================================================================
+4)
+postgres=# select m_name,release_year from movie where release_year>2015;
+ m_name | release_year 
+--------+--------------
+ pk     |         2016
+ piku   |         2016
+ dangal |         2017
+ ddlj   |         2017
+(4 rows)
+===================================================================================
+5)
+postgres=# select count(m_name),sum(budget) from movie where release_year=2017;
+ count |      sum       
+-------+----------------
+     2 | ₹15,000,000.00
+(1 row)
+====================================================================================
+9)
+postgres=# select a.a_name,m.m_name from movie m,actor a,mov_act_pro c where c.m_name=(select c.m_name from movie m,actor a,mov_act_pro c where a.a_name='ritesh deshmukh' and m.m_name=c.m_name and a.a_name=c.a_name) and m.m_name=c.m_name and a.a_name=c.a_name group by a.a_name,m.m_name having count(*)>=1;
+     a_name      | m_name 
+-----------------+--------
+ anushka         | ddlj
+ ritesh deshmukh | ddlj
+(2 rows)
+======================================================================================
+10)
+postgres=# select count(actor.a_name) from movie,actor,mov_act_pro where movie.m_name='sholey' and movie.m_name=mov_act_pro.m_name and actor.a_name=mov_act_pro.a_name group by actor.a_name;
+ count 
+-------
+     1
+     1
+(2 rows)
+
+postgres=# select count(*) from movie,actor,mov_act_pro where movie.m_name='sholey' and movie.m_name=mov_act_pro.m_name and actor.a_name=mov_act_pro.a_name group by actor.a_name;
+ count 
+-------
+     1
+     1
+(2 rows)
+===================================================================================
+8)postgres=# select a_name,role from actor where role='villian';
+     a_name      |  role   
+-----------------+---------
+ ritesh deshmukh | villian
+ allia           | villian
+(2 rows)
+=======================================================================================

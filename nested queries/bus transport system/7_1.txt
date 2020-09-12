@@ -1,0 +1,43 @@
+ostgres=# select *from route;
+ r_no |  source  | destination | no_of_stations 
+------+----------+-------------+----------------
+    1 | kothrud  | manpa       |             10
+    2 | deccan   | manpa       |              9
+    3 | nal stop | katraj      |             11
+    4 | station  | kothrud     |             13
+    5 | hadspar  | deccan      |             15
+(5 rows)
+
+postgres=# select *from bus;
+ b_no | capacity |  depot_name   | r_no 
+------+----------+---------------+------
+  100 |       20 | kothrud depot |    1
+  200 |       30 | deccan depot  |    1
+  300 |       60 | deccan depot  |    2
+  400 |       20 | mnp depot     |    3
+  500 |       40 | mnp depot     |    4
+  600 |       30 | katraj depot  |    3
+(6 rows)
+
+postgres=# select *from driver;
+ d_no | d_name  | license_no |  address   | d_age | salary 
+------+---------+------------+------------+-------+--------
+ 1001 | akshay  |  100200300 | pune       |    23 |  12000
+ 1002 | kushal  |  900100400 | pune       |    23 |  32000
+ 1003 | sudh    |    6543217 | deccan     |    32 |  37000
+ 1004 | ajinkya |    7896541 | abc chowak |    33 |   6000
+(4 rows)
+
+postgres=# select *from bus_driver;
+ b_no | d_no | date_of_duty |  shift  
+------+------+--------------+---------
+  100 | 1001 | 2018-02-22   | morning
+  200 | 1002 | 2014-08-22   | evening
+  200 | 1003 | 2015-09-02   | morning
+  300 | 1004 | 2015-01-02   | evening
+  400 | 1004 | 2015-01-26   | evening
+  500 | 1002 | 2015-03-22   | evening
+  600 | 1003 | 2015-04-02   | morning
+(7 rows)
+=========================================
+

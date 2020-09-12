@@ -1,0 +1,85 @@
+postgres=# select *from cities;
+   city    |    state    
+-----------+-------------
+ pune      | maharashtra
+ mumbai    | maharashtra
+ ambedabad | gujarat
+ patna     | bihar
+(4 rows)
+====================================================
+postgres=# select *from warehouse;
+ w_id | w_name |   location    |   city    
+------+--------+---------------+-----------
+    1 | A      | hinjewadi     | pune
+    2 | B      | warje         | pune
+    3 | C      | marine drive  | mumbai
+    5 | E      | gandhi chowak | ambedabad
+    4 | D      | nagar         | patna
+(5 rows)
+============================================
+postgres=# select *from store;
+ s_id | store_name | location_city | w_id 
+------+------------+---------------+------
+   11 | abc        | pune          |    1
+   12 | pqr        | pune          |    2
+   13 | lmn        | mumbai        |    2
+   14 | xyz        | mumbai        |    3
+   15 | xz         | patna         |    5
+   16 | mno        | jaipur        |    4
+(6 rows)
+===================================================
+postgres=# select *from items;
+ i_no | description | weight |  cost  
+------+-------------+--------+--------
+  200 | laptop      | 269.50 | 100.40
+  201 | phone       | 219.50 | 999.40
+  202 | pendrive    |  79.20 | 300.00
+  203 | harddisk    | 710.20 | 400.00
+(4 rows)
+================================================
+postgres=# select *from cust;
+ c_no |  c_name  |    c_addr    | c_city 
+------+----------+--------------+--------
+ 1001 | vishal   | lucknow      | pune
+ 1002 | yash     | kondhwa      | pune
+ 1004 | patil    | bhavani peth | mumbai
+ 1003 | baviskar | kasba peth   | mumbai
+(4 rows)
+================================================
+postgres=# select *from orders;
+ o_no |   o_date   | c_no 
+------+------------+------
+  500 | 2020-09-16 | 1001
+  501 | 2019-08-11 | 1002
+  502 | 2016-08-11 | 1002
+  503 | 2011-02-11 | 1003
+  504 | 2011-01-10 | 1003
+  505 | 2009-12-10 | 1004
+(6 rows)
+============================================
+postgres=# select *from store_item;  //STORE_ITEM MANY TO MANY RELATIONSHIP
+ s_id | i_no | quantity 
+------+------+----------
+   11 |  200 |       11
+   12 |  201 |       14
+   13 |  203 |       19
+   14 |  202 |       20
+   11 |  202 |       13
+   13 |  200 |       13
+   15 |  202 |       13
+   16 |  203 |       14
+(8 rows)
+====================================================
+postgres=# select *from item_order; //ITEM_ORDER MANY TO MANY RELATIONSHIP
+ i_no | o_no | ordered_quantity 
+------+------+------------------
+  200 |  500 |                5
+  201 |  505 |                3
+  201 |  503 |                7
+  203 |  504 |                1
+  202 |  501 |                6
+  202 |  502 |                6
+  200 |  502 |                5
+(7 rows)
+==========================================================
+

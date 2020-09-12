@@ -1,0 +1,107 @@
+						//BANK DATABASE//
+
+1)
+postgres=# select c.b_id,sum(a_amt_appr) from branch a,loan_application b,ternary c where a.b_name='nagar' and a.b_id=c.b_id and b.l_no=c.l_no group by c.b_id;
+ b_id |     sum     
+------+-------------
+ 1001 | ₹350,000.00
+(1 row)
+=========================================================================================
+2)
+postgres=# select a.c_name from customer a,branch b,ternary c where b.b_name='karve nagar' and a.c_no =c.c_no and b.b_id=c.b_id;
+ c_name 
+--------
+ jyoti
+(1 row)
+==========================================================================================
+4)
+postgres=# select a.c_name from customer a,loan_application b,ternary c where b.a_amt_appr< b.l_amt_req and a.c_no=c.c_no and b.l_no=c.l_no;
+ c_name 
+--------
+ vishal
+ binod
+ arti
+ jyoti
+ arti
+(5 rows)
+
+postgres=# select distinct a.c_name from customer a,loan_application b,ternary c where b.a_amt_appr< b.l_amt_req and a.c_no=c.c_no and b.l_no=c.l_no;
+ c_name 
+--------
+ arti
+ binod
+ jyoti
+ vishal
+(4 rows)
+===============================================================================================
+6)
+postgres=# select a.c_name from customer a,loan_application b,ternary c where b.l_amt_req>'100000' and a.c_no=c.c_no and b.l_no=c.l_no;
+ c_name 
+--------
+ vishal
+ binod
+ arti
+ jyoti
+(4 rows)
+==========================================================================================
+7)
+postgres=# select max(a_amt_appr) from loan_application;
+     max     
+-------------
+ ₹300,000.00
+(1 row)
+===============================================================================================
+8)
+postgres=# select count(b.c_no) from branch a,customer b,ternary c where a.b_name='shivaji nagar' and a.b_id=c.b_id and b.c_no=c.c_no;
+ count 
+-------
+     1
+(1 row)
+
+postgres=# select count(b.c_no) from branch a,customer b,ternary c where a.b_name='shivaji nagar' and a.b_id=c.b_id and b.c_no=c.c_no group by b.c_no;
+ count 
+-------
+     1
+(1 row)
+==================================================================================
+9)
+postgres=# select a.c_name  from customer a,loan_application b,ternary c where b.l_amt_req between '200000' and '400000' and a.c_no=c.c_no and b.l_no=c.l_no;
+ c_name 
+--------
+ vishal
+ binod
+ jyoti
+(3 rows)
+====================================================================================
+10)
+postgres=# select b.c_name from branch a,customer b,ternary c where a.b_id=c.b_id and b.c_no=c.c_no;
+ c_name 
+--------
+ vishal
+ binod
+ arti
+ jyoti
+ arti
+(5 rows)
+
+postgres=# select b.c_name,a.b_name from branch a,customer b,ternary c where a.b_id=c.b_id and b.c_no=c.c_no;
+ c_name |    b_name     
+--------+---------------
+ vishal | nagar
+ binod  | nagar
+ arti   | mg road
+ jyoti  | karve nagar
+ arti   | shivaji nagar
+(5 rows)
+
+postgres=# select distinct a.b_name,b.c_name from branch a,customer b,ternary c where a.b_id=c.b_id and b.c_no=c.c_no;
+    b_name     | c_name 
+---------------+--------
+ nagar         | binod
+ shivaji nagar | arti
+ mg road       | arti
+ karve nagar   | jyoti
+ nagar         | vishal
+(5 rows)
+========================================================================================
+

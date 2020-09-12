@@ -1,0 +1,190 @@
+					//book-author database//
+postgres=# select *from book;
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+    3 | dbms             | niyati   | ₹600.00
+    4 | ds               | vision   | ₹250.00
+(4 rows)
+=============================================================
+postgres=# select *from author;
+ a_no | qualification | a_addr |  a_name   
+------+---------------+--------+-----------
+ 1001 | mca           | pune   | singh
+ 1002 | mcs           | patna  | kulkarni
+ 1003 | ph.d          | delhi  | deshpande
+ 1004 | bca           | nashik | pardeshi
+(4 rows)
+=============================================================
+postgres=# select *from book_author;
+ b_no | a_no 
+------+------
+    1 | 1001
+    2 | 1001
+    2 | 1002
+    3 | 1003
+    3 | 1004
+    4 | 1002
+    4 | 1003
+(7 rows)
+
+==============================================================
+1)
+postgres=# select *from book where b_no in(select b_no from book_author where a_no in(select a_no from author where a_name='singh'));
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+(2 rows)
+====================================================================
+postgres=# select count(*) from book group by pub_name;  //EXTRA//
+ count 
+-------
+     1
+     2
+     1
+(3 rows)
+
+2)
+postgres=# select count(*) from book where pub_name='nirali' group by pub_name;
+ count 
+-------
+     2
+(1 row)
+
+=========================================================================
+3)
+postgres=# select * from book where b_price between '400' and '600';
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+    3 | dbms             | niyati   | ₹600.00
+(3 rows)
+
+
+ ==========================================================================                                 
+4)
+postgres=# select *from author order by a_name asc;
+ a_no | qualification | a_addr |  a_name   
+------+---------------+--------+-----------
+ 1003 | ph.d          | delhi  | deshpande
+ 1002 | mcs           | patna  | kulkarni
+ 1004 | bca           | nashik | pardeshi
+ 1001 | mca           | pune   | singh
+(4 rows)
+=================================================================================
+5)
+postgres=# update book set pub_name='jagruti' where pub_name='niyati';
+UPDATE 1
+postgres=# select *from book;
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+    4 | ds               | vision   | ₹250.00
+    3 | dbms             | jagruti  | ₹600.00
+(4 rows)
+===========================================================================
+6)
+postgres=# select *from book where b_name like 's%';
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+(2 rows)
+=======================================================================================
+//EXTRA//
+postgres=# select *from book where b_no in(select count( b_no) from book_author group by a_no);
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+(2 rows)
+===================================================================================
+9)
+postgres=# select *from book where b_no in(select b_no from book_author where a_no in(select a_no from author where a_addr='nashik'));
+ b_no | b_name | pub_name | b_price 
+------+--------+----------+---------
+    3 | dbms   | jagruti  | ₹600.00
+(1 row)
+==========================================================================================
+//EXTRA//
+postgres=# select b_name from book where b_no in(select b_no from book_author where a_no in(select a_no from author group by a_no ));
+      b_name      
+------------------
+ software_testing
+ sociology
+ ds
+ dbms
+(4 rows)
+=======================================================================================
+//EXTRA//
+postgres=# select * from book where b_no in(select b_no from book_author where a_no in(select a_no from author group by a_no ));
+ b_no |      b_name      | pub_name | b_price 
+------+------------------+----------+---------
+    1 | software_testing | nirali   | ₹400.00
+    2 | sociology        | nirali   | ₹500.00
+    4 | ds               | vision   | ₹250.00
+    3 | dbms             | jagruti  | ₹600.00
+(4 rows)
+=======================================================================================
+postgres=# insert into book_author values(2,1004);
+INSERT 0 1
+postgres=# select count(*) from book_author group by b_no;
+ count 
+-------
+     2
+     2
+     3
+     2
+(4 rows)
+
+postgres=# select *from book_author;
+ b_no | a_no 
+------+------
+    1 | 1001
+    2 | 1001
+    2 | 1002
+    3 | 1003
+    3 | 1004
+    4 | 1002
+    4 | 1003
+    1 | 1004
+    2 | 1004
+(9 rows)
+===============================================================================================
+7)
+postgres=# select author.a_name,book.b_name from book,author,book_author where book.b_no=book_author.b_no and author.a_no=book_author.a_no;
+  a_name   |      b_name      
+-----------+------------------
+ singh     | software_testing
+ singh     | sociology
+ kulkarni  | sociology
+ deshpande | dbms
+ pardeshi  | dbms
+ kulkarni  | ds
+ deshpande | ds
+(7 rows)
+=========================================================================================
+8)
+postgres=# select *from author where a_no in(select a_no from book_author group by a_no having count(*)=2);
+ a_no | qualification | a_addr |  a_name   
+------+---------------+--------+-----------
+ 1002 | mcs           | patna  | kulkarni
+ 1003 | ph.d          | delhi  | deshpande
+ 1001 | mca           | pune   | singh
+(3 rows)
+
+//EXTRA//
+postgres=# select *from author where a_no in(select a_no from book_author group by a_no having count(*)=1);
+ a_no | qualification | a_addr |  a_name  
+------+---------------+--------+----------
+ 1004 | bca           | nashik | pardeshi
+(1 row)
+===================================================================================
+10)
+
+
+

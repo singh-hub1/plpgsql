@@ -1,0 +1,82 @@
+
+1)
+postgres=# select w_name ,city from warehouse where location='nagar';
+ w_name | city  
+--------+-------
+ D      | patna
+(1 row)
+===============================================================================
+2)
+postgres=# select description from items where weight=(select max(weight) from items);  //EXTRA//
+ description 
+-------------
+ harddisk
+(1 row)
+
+postgres=# select description from items where weight=(select min(weight) from items);
+ description 
+-------------
+ pendrive
+(1 row)
+================================================================================================
+3)postgres=# delete from orders where c_no=(select c_no from cust where c_name='patil');
+DELETE 1
+postgres=# select *from orders;
+ o_no |   o_date   | c_no 
+------+------------+------
+  500 | 2020-09-16 | 1001
+  501 | 2019-08-11 | 1002
+  502 | 2016-08-11 | 1002
+  503 | 2011-02-11 | 1003
+  504 | 2011-01-10 | 1003
+(5 rows)
+
+postgres=# select *from cust;
+ c_no |  c_name  |    c_addr    | c_city 
+------+----------+--------------+--------
+ 1001 | vishal   | lucknow      | pune
+ 1002 | yash     | kondhwa      | pune
+ 1004 | patil    | bhavani peth | mumbai
+ 1003 | baviskar | kasba peth   | mumbai
+(4 rows)
+==========================================================================================
+4)
+postgres=# select *from items where i_no in(select i_no from item_order where o_no in(select o_no from orders where c_no=(select c_no from cust where c_name='baviskar')));
+ i_no | description | weight |  cost  
+------+-------------+--------+--------
+  203 | harddisk    | 710.20 | 400.00
+  201 | phone       | 219.50 | 999.40
+(2 rows)
+===================================================================================================
+5)
+postgres=# select w_name from warehouse where w_id in(select w_id from store group by w_id having count(s_id)>=all(select count(s_id) from store group by w_id));
+ w_name 
+--------
+ B
+(1 row)
+
+postgres=# select *from warehouse where w_id in(select w_id from store group by w_id having count(s_id)>=all(select count(s_id) from store group by w_id));
+ w_id | w_name | location | city 
+------+--------+----------+------
+    2 | B      | warje    | pune
+(1 row)
+==================================================================================================
+6)
+postgres=# select i_no,description from items where i_no in(select i_no from item_order group by i_no having count(o_no)<=all(select count(o_no) from item_order group by i_no));
+ i_no | description 
+------+-------------
+  203 | harddisk
+(1 row)
+===================================================================================================
+7)
+postgres=# select cust.c_no,orders.o_no from cust,orders where cust.c_no=orders.c_no group by orders.o_no,cust.c_no;
+ c_no | o_no 
+------+------
+ 1003 |  504
+ 1001 |  500
+ 1004 |  505
+ 1002 |  501
+ 1003 |  503
+ 1002 |  502
+(6 rows)
+=======================================================================================================

@@ -1,0 +1,84 @@
+1)
+postgres=# select *from driver where d_no in(select d_no from bus_driver where shift='evening');
+ d_no | d_name  | license_no |  address   | d_age | salary 
+------+---------+------------+------------+-------+--------
+ 1002 | kushal  |  900100400 | pune       |    23 |  32000
+ 1004 | ajinkya |    7896541 | abc chowak |    33 |   6000
+(2 rows)
+==============================================================================
+2)
+postgres=# select * from route where r_no in(select r_no from bus where capacity=20);
+ r_no |  source  | destination | no_of_stations 
+------+----------+-------------+----------------
+    1 | kothrud  | manpa       |             10
+    3 | nal stop | katraj      |             11
+(2 rows)
+============================================================================
+3)
+postgres=# update driver set salary=salary+salary*0.5 where d_age>30;
+UPDATE 2
+==================================================================
+5)
+postgres=# select d_name,salary from driver where salary in(select max(salary) from driver);
+ d_name | salary 
+--------+--------
+ sudh   |  55500
+(1 row)
+==============================================================================
+6)
+postgres=# delete from bus where capacity<25;
+DELETE 2
+=======================================================================================
+4)
+postgres=# select d_name from driver d,bus_driver db where d.d_no=db.d_no and shift='morning' intersect (select d_name from driver d,bus_driver db where d.d_no=db.d_no and shift='evening');
+ d_name 
+--------
+(0 rows)
+==================================================================================
+
+postgres=# update bus_driver set shift='evening' where d_no=1003;
+UPDATE 2
+===============================================================
+postgres=# select *from bus_driver;
+ b_no | d_no | date_of_duty |  shift  
+------+------+--------------+---------
+  200 | 1002 | 2014-08-22   | evening
+  300 | 1004 | 2015-01-02   | evening
+  500 | 1002 | 2015-03-22   | evening
+  200 | 1003 | 2015-09-02   | evening
+  600 | 1003 | 2015-04-02   | evening
+(5 rows)
+==============================================================================
+7)postgres=# insert into bus_driver values(300,1003,'8-sept-2020','morning');
+INSERT 0 1
+postgres=# insert into bus_driver values(500,1004,'8-sept-2020','morning');
+INSERT 0 1
+postgres=# select *from bus_driver;
+ b_no | d_no | date_of_duty |  shift  
+------+------+--------------+---------
+  200 | 1002 | 2014-08-22   | evening
+  300 | 1004 | 2015-01-02   | evening
+  500 | 1002 | 2015-03-22   | evening
+  200 | 1003 | 2015-09-02   | evening
+  600 | 1003 | 2015-04-02   | evening
+  300 | 1003 | 2020-09-08   | morning
+  500 | 1004 | 2020-09-08   | morning
+(7 rows)
+=======================================================
+4)
+postgres=# select d_name from driver d,bus_driver db where d.d_no=db.d_no and shift='morning' intersect (select d_name from driver d,bus_driver db where d.d_no=db.d_no and shift='evening');
+ d_name  
+---------
+ ajinkya
+ sudh
+(2 rows)
+===================================================================================================
+7)
+postgres=# select d_name,license_no from driver a,bus_driver b where b.shift='morning' and a.d_no=b.d_no intersect select d_name,license_no from driver a,bus_driver b where b.shift='morning' and a.d_no=b.d_no;
+ d_name  | license_no 
+---------+------------
+ ajinkya |    7896541
+ sudh    |    6543217
+(2 rows)
+=======================================================================================================
+

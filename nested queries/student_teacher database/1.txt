@@ -1,0 +1,91 @@
+						//student-teacher database//
+1)
+postgres=# select t_name from teacher where t_no in(select t_no from st_tech where s_no in(select s_no from student where s_name='avinash'));
+  t_name   
+-----------
+ tagore
+ tamhanker
+(2 rows)
+===============================================================================================
+2)
+postgres=# select s_name from student where s_no in(select s_no from st_tech where t_no in(select t_no from teacher where t_name='singh'));
+ s_name  
+---------
+ vishal
+ kamlesh
+(2 rows)
+=======================================================================================================
+3)
+postgres=# select *from teacher where t_name like 't%';
+ t_no |  t_name   | qualification | experence 
+------+-----------+---------------+-----------
+    1 | tagore    | ph.d          |         7
+    2 | tamhanker | bca           |         2
+(2 rows)
+========================================================================================================
+4)
+postgres=# select t_name from teacher where t_no in(select t_no from st_tech where subject='dbms');
+  t_name  
+----------
+ tagore
+ kulkarni
+(2 rows)
+===================================================================================================
+5)
+postgres=# select count(t_no) from teacher where qualification='ph.d';
+ count 
+-------
+     1
+(1 row)
+
+postgres=# select count(*) from teacher where qualification='ph.d';
+ count 
+-------
+     1
+(1 row)
+====================================================================================================
+6)
+postgres=# select count(*) from student where s_addr='cidco';
+ count 
+-------
+     1
+(1 row)
+===========================================================================================
+7)
+postgres=# select * from teacher where experence in(select max(t_no) from teacher);
+ t_no | t_name | qualification | experence 
+------+--------+---------------+-----------
+    4 | singh  | mca           |         4
+(1 row)
+
+postgres=# select * from teacher where experence in(select max(experence) from teacher);
+ t_no | t_name | qualification | experence 
+------+--------+---------------+-----------
+    1 | tagore | ph.d          |         7
+(1 row)
+=============================================================================================
+8)
+postgres=# select *from student where s_class='sybca' and s_addr='kothrud';
+ s_no | s_name | s_class | s_addr  
+------+--------+---------+---------
+ 1002 | vishal | sybca   | kothrud
+(1 row)
+================================================================================================
+9)
+postgres=# select *from student where s_name like'______';
+ s_no | s_name | s_class | s_addr  
+------+--------+---------+---------
+ 1002 | vishal | sybca   | kothrud
+(1 row)
+================================================================================================
+10)
+postgres=# select count(st_tech.subject),t_name from student,teacher,st_tech where teacher.t_no=st_tech.t_no and student.s_no=st_tech.s_no group by t_name;
+ count |  t_name   
+-------+-----------
+     2 | kulkarni
+     2 | singh
+     1 | tagore
+     1 | tamhanker
+(4 rows)
+
+
