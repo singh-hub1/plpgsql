@@ -185,6 +185,11 @@ postgres=# select *from author where a_no in(select a_no from book_author group 
 (1 row)
 ===================================================================================
 10)
+postgres=# select * from author where a_no in(select a_no from b_t group by(a_no) having count(a_no)>=all(select count(a_no) from b_t group by a_no));
+ a_no | a_name | qualification | addr  
+------+--------+---------------+-------
+   30 | agashe | bca           | akola
+(1 row)
 
 
 

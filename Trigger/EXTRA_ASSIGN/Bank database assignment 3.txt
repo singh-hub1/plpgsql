@@ -1,0 +1,230 @@
+						
+						|| Assignment No. 3 Stored Functions ||
+							|| Bank Database ||
+
+
+
+assignment=# select * from customer;
+ cno |        c_name        |                caddr                |         city         
+-----+----------------------+-------------------------------------+----------------------
+  50 | Siddharth            | darab toli                          | patna               
+  51 | vighnesh             | sector 203                          | jamshedpur          
+  52 | prince               | sector 2                            | udaypur             
+  53 | anishka              | sector 98                           | punjab              
+  54 | puja                 | sector 8                            | pune                
+  55 | aman                 | viman nagar                         | pune                
+  56 | harshit              | pimpri                              | pune                
+(7 rows)
+
+assignment=# select * from branch;
+ br_id |            br_name             |  br_city   
+-------+--------------------------------+------------
+     1 | begampur                       | patna     
+     2 | kangan ghat                    | patna     
+     3 | shivaji nagar                  | pune      
+     4 | hadapsar                       | pune      
+     5 | amritsar                       | punjab    
+(5 rows)
+
+assignment=# select * from loan_application;
+ lno | l_amt_required | l_amt_approved |   l_date   
+-----+----------------+----------------+------------
+ 101 |  $3,500,000.00 |  $2,400,000.00 | 2020-05-08
+ 102 |  $5,000,000.00 |  $4,000,000.00 | 2019-07-11
+ 103 |  $1,000,000.00 |    $500,000.00 | 2019-04-08
+ 104 |    $100,000.00 |    $100,000.00 | 2020-04-29
+ 105 |     $60,000.00 |     $34,000.00 | 2020-07-29
+ 106 |     $70,000.00 |     $44,000.00 | 2020-08-16
+(6 rows)
+
+assignment=# select * from ternary;
+ br_id | cno | lno 
+-------+-----+-----
+     1 |  50 | 102
+     1 |  51 | 101
+     2 |  52 | 103
+     3 |  53 | 104
+     4 |  54 | 105
+     5 |  55 | 106
+     3 |  56 | 106
+     3 |  52 | 103
+(8 rows)
+
+----------------
+|Cursor Queries |
+----------------
+
+Q1 Write a stored function to accept branch name and display customer details whose loan amount
+required is more than loan approved.
+
+create or replace function br_n(varchar)
+returns void as'
+declare
+rec record;
+i int;
+begin
+	i=1;
+	for rec in select distinct c_name,caddr,city from customer,branch,loan_application,ternary where loan_application.lno=ternary.lno and branch.br_id=ternary.br_id and l_amt_required > l_amt_approved and br_name=$1 loop
+	raise notice ''Details of customer % are:'',i;
+	i := i + 1;
+	raise notice ''Customer name is %'',rec.c_name;
+	raise notice ''Customer address = %'',rec.caddr;
+	raise notice ''Customer city = %'',rec.city;
+	raise notice ''                                 '';
+	end loop;
+	end;
+	'language 'plpgsql';
+
+assignment=# select br_n('begampur');
+NOTICE:  Details of customer 1 are:
+NOTICE:  Customer name is prince              
+NOTICE:  Customer address = sector 2                           
+NOTICE:  Customer city = udaypur             
+NOTICE:                                   
+NOTICE:  Details of customer 2 are:
+NOTICE:  Customer name is puja                
+NOTICE:  Customer address = sector 8                           
+NOTICE:  Customer city = pune                
+NOTICE:                                   
+NOTICE:  Details of customer 3 are:
+NOTICE:  Customer name is harshit             
+NOTICE:  Customer address = pimpri                             
+NOTICE:  Customer city = pune                
+NOTICE:                                   
+NOTICE:  Details of customer 4 are:
+NOTICE:  Customer name is Siddharth           
+NOTICE:  Customer address = darab toli                         
+NOTICE:  Customer city = patna               
+NOTICE:                                   
+NOTICE:  Details of customer 5 are:
+NOTICE:  Customer name is anishka             
+NOTICE:  Customer address = sector 98                          
+NOTICE:  Customer city = punjab              
+NOTICE:                                   
+NOTICE:  Details of customer 6 are:
+NOTICE:  Customer name is vighnesh            
+NOTICE:  Customer address = sector 203                         
+NOTICE:  Customer city = jamshedpur          
+NOTICE:                                   
+NOTICE:  Details of customer 7 are:
+NOTICE:  Customer name is aman                
+NOTICE:  Customer address = viman nagar                        
+NOTICE:  Customer city = pune                
+NOTICE:                                   
+ br_n 
+------
+ 
+(1 row)
+
+
+Q2 Write a stored function to accept branch name and display customer name, loan number, loan
+amount approved on or after 01/06/2019.
+
+create or replace function cs_det(varchar) returns void as'
+declare
+rec record;
+begin
+	for rec in select c_name,loan_application.lno,l_amt_approved from branch,customer,loan_application,ternary where branch.br_id=ternary.br_id and  loan_application.lno=ternary.lno and customer.cno=ternary.cno and l_date=''07-29-2020'' and br_name=$1 loop
+	raise notice ''Customer name||loan number || loan amount approved'';
+	raise notice ''% %              %'',rec.c_name,rec.lno,rec.l_amt_approved;
+	end loop;
+	end;
+	'language 'plpgsql';	
+
+
+assignment=# select cs_det('hadapsar');
+NOTICE:  Customer name||loan number || loan amount approved
+NOTICE:  puja                 105              $34,000.00
+ cs_det 
+--------
+ 
+(1 row)
+
+
+Q3 Write a stored function to display total loan amount approved by all branches after date
+30/05/2019.
+
+create or replace function ln_app() returns void as'
+declare 
+suma record;
+begin
+	for suma in select sum(l_amt_approved) from loan_application,branch,ternary where loan_application.lno=ternary.lno and branch.br_id=ternary.br_id and l_date>''07/29/2020'' loop
+	raise notice ''Totoal sum of loan amount approved by all branches after 29/07/2020 is %'',suma.sum;
+	end loop;
+	end;
+	'language 'plpgsql';
+	
+
+
+assignment=# select ln_app();
+NOTICE:  Totoal sum of loan amount approved by all branches after 29/07/2020 is $88,000.00
+ ln_app 
+--------
+ 
+(1 row)
+
+
+
+
+
+Q4 Write a stored function to display customer details who have applied for loan more than one
+branches.
+
+create or replace function c_l() returns void as'
+declare
+rec record;
+begin
+	for rec in select c_name,caddr,city from customer,branch,loan_application,ternary where customer.cno=ternary.cno and branch.br_id=ternary.br_id and loan_application.lno=ternary.lno group by customer.cno having count(branch.br_id)>1 loop
+	raise notice ''Details for customers who have applied for loan on more than one branches are :-'';
+	raise notice ''Customer name   ||  customer address    ||          customer city'';
+	raise notice ''% % %'',rec.c_name,rec.caddr,rec.city;
+	end loop;
+	end;
+	'language 'plpgsql';
+
+assignment=# select c_l();
+NOTICE:  Details for customers who have applied for loan on more than one branches are :-
+NOTICE:  Customer name   ||  customer address    ||          customer city
+NOTICE:  prince               sector 2                            udaypur             
+ c_l 
+-----
+ 
+(1 row)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+create function plpgsql_call_handler()
+returns language_handler as
+'$libdir/plpgsql' language c;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

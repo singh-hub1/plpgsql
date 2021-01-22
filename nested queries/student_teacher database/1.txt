@@ -78,7 +78,18 @@ postgres=# select *from student where s_name like'______';
  1002 | vishal | sybca   | kothrud
 (1 row)
 ================================================================================================
-10)
+10) postgres=# select t_name,subject,count(student.s_no) from student,teacher,st_te where teacher.t_no=st_te.t_no and student.s_no=st_te.s_no group by(t_name,subject,student.s_no);
+ t_name | subject | count 
+--------+---------+-------
+ rahul  | os      |     1
+ yashu  | java    |     1
+ rahul  | dbms    |     1
+ kunal  | ds      |     1
+ yashu  | cn      |     1
+ kunal  | kali    |     1
+(6 rows)
+
+//EXTRA//
 postgres=# select count(st_tech.subject),t_name from student,teacher,st_tech where teacher.t_no=st_tech.t_no and student.s_no=st_tech.s_no group by t_name;
  count |  t_name   
 -------+-----------

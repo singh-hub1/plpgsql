@@ -117,26 +117,12 @@ postgres=# select p_name from person where income between '40000' and '80000';
  rohit
 (3 rows)
 ===================================================================================
-5)
-postgres=# select p_name,extract(month from birth_date)=07 from person;
- p_name | ?column? 
---------+----------
- depak  | t
- arti   | f
- binod  | f
- vishal | f
- rohit  | t
-(5 rows)
+5)postgres=# select p_name,birth_date from person where extract(month from birth_date)=2;
+ p_name | birth_date 
+--------+------------
+ vishal | 2001-02-02
+(1 row)
 
-postgres=# select p_name,extract(day from birth_date)=07 from person;
- p_name | ?column? 
---------+----------
- depak  | t
- arti   | f
- binod  | f
- vishal | t
- rohit  | f
-(5 rows)
 ======================================================================================
 //EXTRA//
 postgres=# select* from person where income in(select max(income) from person group by a_name);
@@ -212,6 +198,11 @@ postgres=# select *from person order by p_name desc;
 (4 rows)
 
 =============================================================================
-
+6)postgres=# select distinct a.p_name,b.p_name from person as a,person as b where a.income=b.income and a.p_name!=b.p_name;
+ p_name | p_name 
+--------+--------
+ yashu  | roo
+ roo    | yashu
+(2 rows)
 
 

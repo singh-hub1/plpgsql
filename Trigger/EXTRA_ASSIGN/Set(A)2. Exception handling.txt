@@ -1,0 +1,119 @@
+
+Creating Tables:-
+
+create table student
+(sno integer primary key,
+sname char(30),
+sclass char(20),
+saddr char(50));
+
+create table teacher
+(tno integer primary key,
+tname char(30),
+qualification char(15),
+experience integer);
+
+create table sp
+(sno integer references student(sno),
+tno integer references teacher(tno),
+subject text);
+
+Functions:-
+
+1. write a stored function to count number of teachers teaching to a student named "______".(Accept student name as input parameter). Raise an exception if student name does not exist.
+
+create or replace function cnt_teach(text)
+returns void as'
+declare
+n alias for $1;
+c int;
+n1 text;
+begin
+select into n1 sno from student where sname=$1;
+if (n1 is null) then
+raise exception ''Invalid student name...'';
+else
+select into c count(sp.sno) from student,teacher,sp
+where teacher.tno=sp.tno and student.sno=sp.sno and sname=n;
+raise notice ''Teacher count is %'',c;
+end if;
+end;'
+language 'plpgsql';
+
+
+2. Write a stored function to count the number of students who are stdying subject named "_______"(Accept subject name as input parameter). Display errror message if subject name is not valid.
+
+
+create or replace function cnt_stud(text)
+returns void as'
+declare
+n alias for $1;
+c int;
+n1 text;
+begin
+select into n1 subject from sp where subject=$1;
+if (n1 is null) then
+raise exception ''Invalid subject name...'';
+else
+select into c count(sp.sno) from student,sp
+where student.sno=sp.sno and subject=n;
+raise notice ''Student count is %'',c;
+end if;
+end;'
+language 'plpgsql';
+
+3. Write a stored funtion to display teacher details who have qualification as "_______"(Accept teacher's qualification as input parameter). raise an exception for invalid qualification.
+
+create or replace function qualification(text)
+returns void as'
+declare
+q text;
+rec record;
+begin
+select into q qualification from teacher where qualification=$1;
+if (q is null) then
+raise exception ''Invalid qualification...'';
+else
+for rec in select * from teacher where qualification=$1
+loop
+raise notice ''Teacher name is %'',rec.tname;
+end loop;
+end if;
+end;'
+language 'plpgsql';
+
+
+Tables:-
+
+database=# select * from student;
+ sno |             sname              |        sclass        |                       saddr                        
+-----+--------------------------------+----------------------+----------------------------------------------------
+   1 | Amol                           | FYBCA                | Pimpri                                            
+   2 | Anil                           | FYBCA                | Pune                                              
+   3 | Seema                          | SYBCA                | Pune                                              
+   4 | Rohan                          | SYBCA                | Chakan                                            
+   5 | Bharti                         | TYBCA                | Pimpri                                            
+(5 rows)
+
+database=# select * from teacher;
+ tno |             tname              |  qualification  | experience 
+-----+--------------------------------+-----------------+------------
+ 101 | Mr More                        | Msc             |         20
+ 102 | Mr pawar                       | Phd             |         15
+ 103 | Mrs Kokane                     | Phd             |         15
+ 104 | Mr Kolhe                       | M tech          |         30
+ 105 | Mrs Kulkarni                   | Mcs             |         25
+(5 rows)
+
+database=# select * from sp;
+ sno | tno |      subject      
+-----+-----+-------------------
+   2 | 105 | C programming
+   2 | 105 | Data structure
+   5 | 102 | Operating systems
+   1 | 104 | Data structure
+   4 | 103 | Computer networks
+   3 | 103 | Java
+   5 | 101 | PHP
+(7 rows)
+

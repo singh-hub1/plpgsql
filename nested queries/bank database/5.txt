@@ -105,3 +105,11 @@ postgres=# select distinct a.b_name,b.c_name from branch a,customer b,ternary c 
 (5 rows)
 ========================================================================================
 
+5)
+postgres=# select b_name,c_name from branch,customer,la,ternary where branch.b_id=ternary.b_id and customer.c_no=ternary.c_no and la.l_no=ternary.l_no and (select extract (month from la.ldate))=2;
+        b_name        | c_name 
+----------------------+--------
+ karve nagar          | vishal
+ karve nagar          | roo
+(2 rows)
+

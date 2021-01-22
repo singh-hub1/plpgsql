@@ -87,3 +87,20 @@ postgres=# select count(*) from movie,actor,mov_act_pro where movie.m_name='shol
  allia           | villian
 (2 rows)
 =======================================================================================
+6)
+postgres=#select distinct a_name from movie_actor where a_name in(select a_name from movie_actor group by(a_name) having count(a_name) <= all(select count(a_name) from movie_actor group by(a_name)));
+ a_name  
+---------
+ rahul
+ tanisha
+(2 rows)
+==========================================================================================================
+7)
+postgres=# select m_name from movie_producer group by m_name having count(p_id)>1;
+ m_name 
+--------
+ bad
+(1 row)
+
+
+
